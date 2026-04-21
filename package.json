@@ -1,0 +1,176 @@
+{
+  "name": "mortar",
+  "displayName": "Mortar",
+  "description": "minimal fill-in-middle autocomplete backed by a remote llama.cpp or openai-compatible server",
+  "version": "0.1.0",
+  "publisher": "khimaros",
+  "license": "GPL-3.0-or-later",
+  "icon": "resources/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/khimaros/mortar"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Programming Languages", "Machine Learning"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Mortar",
+      "properties": {
+        "mortar.endpoint": {
+          "type": "string",
+          "default": "http://localhost:7860",
+          "description": "base url of the inference server (e.g. http://localhost:7860). a trailing /v1 or /infill is stripped automatically."
+        },
+        "mortar.model": {
+          "type": "string",
+          "default": "",
+          "description": "model name to request (e.g. qwen3-coder-30b-a3b-instruct:Q8_0). optional if the server has a single loaded model."
+        },
+        "mortar.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "optional bearer token sent as Authorization header."
+        },
+        "mortar.mode": {
+          "type": "string",
+          "enum": ["auto", "infill", "openai"],
+          "default": "auto",
+          "description": "auto: probe /infill, fall back to /v1/completions. infill: force native llama.cpp /infill. openai: force /v1/completions with a fim prompt template."
+        },
+        "mortar.openaiPromptTemplate": {
+          "type": "string",
+          "default": "<|fim_prefix|>{prefix}{prompt}<|fim_suffix|>{suffix}<|fim_middle|>",
+          "description": "prompt template for openai mode. placeholders: {prefix} {prompt} {suffix}."
+        },
+        "mortar.openaiStopStrings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["<|fim_prefix|>", "<|fim_suffix|>", "<|fim_middle|>", "<|endoftext|>", "<|file_sep|>", "<|repo_name|>"],
+          "description": "stop strings used in openai mode."
+        },
+        "mortar.nPrefix": {
+          "type": "integer",
+          "default": 256,
+          "description": "number of lines before the cursor to include as input_prefix."
+        },
+        "mortar.nSuffix": {
+          "type": "integer",
+          "default": 64,
+          "description": "number of lines after the cursor to include as input_suffix."
+        },
+        "mortar.nPredict": {
+          "type": "integer",
+          "default": 128,
+          "description": "max tokens to predict."
+        },
+        "mortar.tMaxPromptMs": {
+          "type": "integer",
+          "default": 500,
+          "description": "max alloted time for prompt processing (native infill only)."
+        },
+        "mortar.tMaxPredictMs": {
+          "type": "integer",
+          "default": 1000,
+          "description": "max alloted time for prediction (native infill only)."
+        },
+        "mortar.debounceMs": {
+          "type": "integer",
+          "default": 150,
+          "description": "debounce delay before an automatic completion fires."
+        },
+        "mortar.maxLineSuffix": {
+          "type": "integer",
+          "default": 8,
+          "description": "skip automatic completion if more than this many characters follow the cursor on the current line."
+        },
+        "mortar.auto": {
+          "type": "boolean",
+          "default": true,
+          "description": "trigger completions automatically while typing."
+        },
+        "mortar.maxCacheKeys": {
+          "type": "integer",
+          "default": 250,
+          "description": "max entries in the lru completion cache."
+        },
+        "mortar.statusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "show the mortar status bar indicator."
+        },
+        "mortar.statusBarTimings": {
+          "type": "boolean",
+          "default": false,
+          "description": "show completion timings inline in the status bar text. when false, timings are only visible in the tooltip."
+        },
+        "mortar.ringNChunks": {
+          "type": "integer",
+          "default": 16,
+          "description": "max number of chunks from recently-edited buffers to send as extra context. 0 disables."
+        },
+        "mortar.prefetch": {
+          "type": "boolean",
+          "default": false,
+          "description": "speculatively fetch the next completion assuming the current one is accepted, and cache it."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "mortar.triggerCompletion",
+        "title": "Mortar: Trigger Completion"
+      },
+      {
+        "command": "mortar.toggleAuto",
+        "title": "Mortar: Toggle Automatic Completion"
+      },
+      {
+        "command": "mortar.configureEndpoint",
+        "title": "Mortar: Configure Endpoint"
+      },
+      {
+        "command": "mortar.selectModel",
+        "title": "Mortar: Select Model"
+      },
+      {
+        "command": "mortar.setup",
+        "title": "Mortar: Run Setup"
+      },
+      {
+        "command": "mortar.showMenu",
+        "title": "Mortar: Show Menu"
+      },
+      {
+        "command": "mortar.openSettings",
+        "title": "Mortar: Open Settings"
+      },
+      {
+        "command": "mortar.acceptLine",
+        "title": "Mortar: Accept Next Line of Completion"
+      },
+      {
+        "command": "mortar.acceptWord",
+        "title": "Mortar: Accept Next Word of Completion"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -p . --watch",
+    "lint": "eslint src --ext ts",
+    "test": "npm run compile && node --test test/*.test.mjs",
+    "precommit": "npm run lint && npm run compile && npm run test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.4.0"
+  }
+}
