@@ -6,6 +6,18 @@ just ghost-text code suggestions while you type.
 
 the middle that holds your code together.
 
+## prerequisites
+
+llama.cpp server (for infill) or an openai compatible endpoint.
+
+can be a cloud provider or self-hosted.
+
+for best results, use an FIM compatible model like `qwen3-coder-30b-a3b-instruct`
+
+minimal config quickstart: `llama-server --fim-qwen-30b-default --port 7860`
+
+otherwise, setup manually with eg. [unsloth quants](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF)
+
 ## configure
 
 easiest path: click the `$(sparkle) mortar` status bar item and pick **Run setup**.
@@ -20,7 +32,7 @@ optional:
 
 - `mortar.apiKey` — bearer token.
 - `mortar.mode` — `auto` (default, probes /infill then falls back), `infill`, `openai`.
-- `mortar.openaiPromptTemplate` — fim template used only in openai mode.
+- `mortar.openaiPromptTemplate` — FIM template used only in openai mode.
   default is qwen-style `<|fim_prefix|>{prefix}{prompt}<|fim_suffix|>{suffix}<|fim_middle|>`.
 - `mortar.statusBar` — show the status bar indicator (default true).
 - `mortar.ringNChunks` — max chunks from recently-edited buffers to pass as extra context (default 16, 0 disables).
@@ -69,9 +81,9 @@ MORTAR_TEST_MODEL=qwen3-coder-30b-a3b-instruct:Q8_0 \
 mortar speaks two wire protocols:
 
 1. **native llama.cpp `/infill`** — preferred. the server applies the right
-   fim tokens for the loaded model.
+   FIM tokens for the loaded model.
 2. **openai `/v1/completions`** — fallback. the extension wraps the prompt in
-   a fim template client-side and uses stop strings.
+   a FIM template client-side and uses stop strings.
 
 see `DESIGN.md` for the exact request shapes.
 
