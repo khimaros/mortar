@@ -1,8 +1,6 @@
 # mortar
 
-minimal fill-in-the-middle autocomplete for vs code, backed by a remote
-llama.cpp or openai-compatible server. no local server, no chat, no agents —
-just ghost-text code suggestions while you type.
+minimal fill-in-the-middle autocomplete for vs code, backed by a remote llama.cpp or openai-compatible server.
 
 the middle that holds your code together.
 
