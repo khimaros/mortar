@@ -7,6 +7,7 @@ export interface FimRequest {
     prompt: string;
     nIndent?: number;
     inputExtra?: { text: string; filename: string }[];
+    stop?: string[];
 }
 
 export interface FimResponse {
@@ -71,6 +72,7 @@ export class FimClient {
         };
         if (req.nIndent !== undefined) body.n_indent = req.nIndent;
         if (this.cfg.model.trim()) body.model = this.cfg.model;
+        if (req.stop) body.stop = req.stop;
         const started = Date.now();
         const res = await this.post("/infill", body, signal);
         if (!res.ok) return undefined;
@@ -96,7 +98,7 @@ export class FimClient {
             temperature: 0.1,
             top_p: 0.99,
             stream: false,
-            stop: this.cfg.openaiStopStrings,
+            stop: req.stop ? [...this.cfg.openaiStopStrings, ...req.stop] : this.cfg.openaiStopStrings,
         };
         const started = Date.now();
         const res = await this.post("/v1/completions", body, signal);

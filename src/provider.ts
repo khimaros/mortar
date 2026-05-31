@@ -86,8 +86,9 @@ export class FimProvider implements vscode.InlineCompletionItemProvider {
                 this.statusbar.showThinking();
                 try {
                     const inputExtra = this.ring.snapshot(document.uri.fsPath);
+                    const stopSequences = !this.cfg.multilineCompletions ? ["\n", "\r\n"] : undefined;
                     const data = await this.client.getCompletion(
-                        { inputPrefix, inputSuffix, prompt, nIndent: nIndent || undefined, inputExtra },
+                        { inputPrefix, inputSuffix, prompt, nIndent: nIndent || undefined, inputExtra, stop: stopSequences },
                         ac.signal,
                     );
                     if (!data || !data.content) {
@@ -115,6 +116,7 @@ export class FimProvider implements vscode.InlineCompletionItemProvider {
             for (const c of completions) {
                 const lines = c.split(/\r?\n/);
                 removeTrailingNewlines(lines);
+                if (!this.cfg.multilineCompletions) lines.splice(1);
                 if (shouldDiscardSuggestion(lines, document, position, linePrefix, lineSuffix)) continue;
                 accepted.push(trimSuggestion(lines, lineSuffix));
             }
@@ -167,8 +169,9 @@ export class FimProvider implements vscode.InlineCompletionItemProvider {
         const key = LruCache.hash(newInputPrefix, newInputSuffix, newPrompt);
         if (this.cache.get(key)) return;
         const ac = new AbortController();
+        const stopSequences = !this.cfg.multilineCompletions ? ["\n", "\r\n"] : undefined;
         this.client.getCompletion(
-            { inputPrefix: newInputPrefix, inputSuffix: newInputSuffix, prompt: newPrompt },
+            { inputPrefix: newInputPrefix, inputSuffix: newInputSuffix, prompt: newPrompt, stop: stopSequences },
             ac.signal,
         ).then((data) => {
             if (!data || !data.content) return;
