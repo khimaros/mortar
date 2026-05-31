@@ -22,6 +22,7 @@ export interface Config {
     statusBarTimings: boolean;
     ringNChunks: number;
     prefetch: boolean;
+    multilineCompletions: boolean;
 }
 
 // strip trailing /v1 or /infill so the client can append whichever path it needs
@@ -53,5 +54,6 @@ export function readConfig(): Config {
         statusBarTimings: c.get<boolean>("statusBarTimings", false),
         ringNChunks: c.get<number>("ringNChunks", 16),
         prefetch: c.get<boolean>("prefetch", false),
+        multilineCompletions: c.get<boolean>("multilineCompletions", true),
     };
 }

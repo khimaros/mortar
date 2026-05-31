@@ -116,6 +116,11 @@
           "type": "boolean",
           "default": false,
           "description": "speculatively fetch the next completion assuming the current one is accepted, and cache it."
+        },
+        "mortar.multilineCompletions": {
+          "type": "boolean",
+          "default": true,
+          "description": "allow completions to span multiple lines."
         }
       }
     },

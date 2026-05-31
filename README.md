@@ -35,6 +35,7 @@ optional:
 - `mortar.statusBar` — show the status bar indicator (default true).
 - `mortar.ringNChunks` — max chunks from recently-edited buffers to pass as extra context (default 16, 0 disables).
 - `mortar.prefetch` — speculatively fetch the next completion after each accept (default false).
+- `mortar.multilineCompletions` — allow completions to span multiple lines (default true).
 - `mortar.statusBarTimings` — show completion timings inline in the status bar text (default false; timings always available in the tooltip).
 
 ## build

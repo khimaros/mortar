@@ -28,3 +28,4 @@
 - [x] accept-next-line and accept-next-word commands (wrap vs code built-ins).
 - [x] per-model default prompt templates (codellama, deepseek) for openai mode.
 - [x] prefetch future completions (see llama.vscode cacheFutureSuggestion).
+- [x] option to disable multiline completions.
